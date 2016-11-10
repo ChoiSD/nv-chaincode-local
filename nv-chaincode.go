@@ -88,7 +88,7 @@ func main() {
 // ============================================================================================================================
 // Init
 // ============================================================================================================================
-func (t *SimpleChaincode) Init(stub shim.ChaincodeStubInterface) ([]byte, error) {
+func (t *SimpleChaincode) Init(stub shim.ChaincodeStubInterface, function string, args []string) ([]byte, error) {
 
 	var err error
 
@@ -170,13 +170,13 @@ func (t *SimpleChaincode) Init(stub shim.ChaincodeStubInterface) ([]byte, error)
 // ============================================================================================================================
 // Invoke - Our entry point
 // ============================================================================================================================
-func (t *SimpleChaincode) Invoke(stub shim.ChaincodeStubInterface) ([]byte, error) {
-	function, args := stub.GetFunctionAndParameters()
-
+func (t *SimpleChaincode) Invoke(stub shim.ChaincodeStubInterface, function string, args []string) ([]byte, error) {
 	fmt.Println("invoke is running " + function)
 
 	// Handle different functions
-	if function == "submitTx" { //create a transaction
+	if function == "init" {
+		return t.Init(stub, "init", args)
+	} else if function == "submitTx" { //create a transaction
 		return t.submitTx(stub, args)
 	}
 
@@ -188,9 +188,7 @@ func (t *SimpleChaincode) Invoke(stub shim.ChaincodeStubInterface) ([]byte, erro
 // ============================================================================================================================
 // Query - read a variable from chaincode state - (aka read)
 // ============================================================================================================================
-func (t *SimpleChaincode) Query(stub shim.ChaincodeStubInterface) ([]byte, error) {
-	function, args := stub.GetFunctionAndParameters()
-
+func (t *SimpleChaincode) Query(stub shim.ChaincodeStubInterface, function string, args []string) ([]byte, error) {
 	if function == "read" {
 		if len(args) != 2 {
 			return nil, errors.New("Incorrect number of arguments passed")
